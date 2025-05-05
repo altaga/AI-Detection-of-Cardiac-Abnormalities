@@ -1,0 +1,8 @@
+Time(Seconds),Length(Seconds),Label(string),Confidence(double),Comment(string)
+0.19422,21.5330922,Noise,1,
+63.0396703,5.9435232,Noise,1,
+105.0340719,10.4255243,Noise,1,
+130.5401054,81.08257080000001,Normal,1,
+214.738866,15.8391572,Normal,1,
+233.9596958,1.5913753,Normal,1,
+237.2916378,1.2929924,Normal,1,

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ImagimobStudio version="0.9">
+  <Timeline id="043064ab-4c5a-4db4-8dba-493822acbfe2">
+    <Tracks>
+      <Track name="ECG Data" type="datacsv" isLabelTrack="False">
+        <PayloadFile>ECG-Data.data</PayloadFile>
+        <Shape>
+          <Axis name="Axis" size="1">
+            <Label index="0">Voltage</Label>
+          </Axis>
+        </Shape>
+      </Track>
+      <Track name="label" type="labelcsv">
+        <PayloadFile>label.label</PayloadFile>
+        <Shape>
+          <Axis name="Labels" size="1">
+            <Label index="0">Normal</Label>
+          </Axis>
+        </Shape>
+      </Track>
+    </Tracks>
+  </Timeline>
+</ImagimobStudio>

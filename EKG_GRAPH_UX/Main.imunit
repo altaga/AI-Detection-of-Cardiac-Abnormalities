@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Imaginet version="2.0.0.0">
+  <Compound unit="d419d86b-7b57-41d3-9a74-ab428f13a213">
+    <Nodes>
+      <UnitNode id="node_21" x="-98.19999999999982" y="323.00000000000017" enabled="true" unit="Imaginet.Units.KerasModel">
+        <StringArgument param="file_path">C:/Users/VAI/Downloads/ECG Datas/conv1d-large-accuracy-2/conv1d-large-accuracy-2.h5</StringArgument>
+      </UnitNode>
+      <UnitNode id="node_24" x="427" y="322.20000000000005" enabled="true" name="Keras Model Labels" unit="ImagimobStudio.Modules.LabelTrack" />
+      <UnitNode id="node_20" x="-76.61447932557212" y="520.496393416299" enabled="true" name="Low Pass Filter Data" unit="ImagimobStudio.Modules.DataTrack" />
+      <DeviceNode id="node_5" x="-404.93698997061" y="410.4595345030816" enabled="true" name="ECG" board="290de5cb-460b-41bf-31cb-8c012f1faff5" boardName="PSOC 6 AI (CY8CKIT-06S2-AI)" device="0">
+        <Int32Argument param="frequency_1">3</Int32Argument>
+      </DeviceNode>
+    </Nodes>
+    <Connections>
+      <Connection>
+        <Source node="node_5" param="Ecg" />
+        <Target node="node_21" param="input" />
+      </Connection>
+      <Connection>
+        <Source node="node_5" param="Ecg" />
+        <Target node="node_20" param="data" />
+      </Connection>
+      <Connection>
+        <Source node="node_21" param="output" />
+        <Target node="node_24" param="data" />
+      </Connection>
+    </Connections>
+  </Compound>
+</Imaginet>
