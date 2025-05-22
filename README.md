@@ -120,23 +120,23 @@ NOTE: This is a hack that needs to be refined for future versions of the documen
 
 - In the _init_hw function, you must initialize the ADC as shown in the following snippet.
 
-```c
-static bool _init_hw(dev_bmm350_t *dev, cyhal_i2c_t* i2c)
-{
-adc_single_channel_init();
-cyhal_adc_configure(&adc_obj, &adc_config);
-...
-```
+    ```c
+    static bool _init_hw(dev_bmm350_t *dev, cyhal_i2c_t* i2c)
+    {
+    adc_single_channel_init();
+    cyhal_adc_configure(&adc_obj, &adc_config);
+    ...
+    ```
 - Modify the _read_hw function so that all data read from the ADC is passed to Deepcraft Studio.
 
 ```c
-static bool _read_hw(dev_bmm350_t* dev)
-{
-...
-int32_t adc_result_0 = 0;
-adc_result_0 = cyhal_adc_read_uv(&adc_chan_0_obj) / MICRO_TO_MILLI_CONV_RATIO;
-float res = (float)adc_result_0;
-data.y = res;
+    static bool _read_hw(dev_bmm350_t* dev)
+    {
+    ...
+    int32_t adc_result_0 = 0;
+    adc_result_0 = cyhal_adc_read_uv(&adc_chan_0_obj) / MICRO_TO_MILLI_CONV_RATIO;
+    float res = (float)adc_result_0;
+    data.y = res;
 
 float *dest = dev->data + dev->frames_sampled * AXIS_COUNT;
 *dest++ = res;
@@ -157,7 +157,7 @@ manager);
 Finally, we'll complete the build, and in our studio, we'll be able to view the EKG sensor data, as well as change its sampling rate, etc.
 <img src="./Images/3.png">
 
-Los datos que deberemos ver en el estudio deberan ser los siguientes. Recomendamos tomar ventaja del studio y colocar un Low Pass filter, ya que al ser una señal muy pequeña la del EKG puede visualizarse la señarl de 50-60hz de la linea electrica.
+The data we should see in the study should be as follows. We recommend taking advantage of the study and installing a Low Pass filter, since the EKG signal is very small and the 50-60 Hz signal from the power line can be seen.
 
 ### Without Filter at 400hz:
 
@@ -167,49 +167,48 @@ Los datos que deberemos ver en el estudio deberan ser los siguientes. Recomendam
 
 <img src="./Images/4.png">
 
-Recomendamos ampliamente revsiar todas las modificaciones realizadas en el proyecto de Modus.
+We strongly recommend reviewing all changes made to the Modus project.
 
 [EKG Modus](./EKG_STREAMING/source/main.c)
 
 ## Deepcraft Data:
 
-Ahora que recibimos los datos de el EKG correctamente y podemos verlo en el studio, es la hora de obtener algunas sesiones, estas solo pueden durar maximo 5 min, sin embargo te recomiendo realizar las mas posibles para obtener una buena cantidad de datos.
+Now that we have the EKG data correctly and can view it in the studio, it's time to create some sessions. These can only last a maximum of 5 minutes, however, I recommend running as many as possible to obtain a good amount of data.
 
 <img src="./Images/5.png">
 
-Consideraciones:
-- Los datos en el studio no pueden dividirse, osea que las sesiones completas deben de ser asignadas a un tipo de set, train, test y validation.
-- Trata de que todas las sesiones tengan la mayor cantidad de labels posibles ya que Deecraft studio lo utilizara para el entranamiento.
+Considerations:
+- The data in the studio cannot be split; that is, complete sessions must be assigned to a set type: train, test, and validation.
+- Try to ensure that all sessions have as many labels as possible, since Deecraft Studio will use them for training.
 
-Si quieres ver las sesiones que generamos para este modelo son las siguientes.
-
+If you want to see the sessions we generated for this model, they are as follows.
 [SESSIONS](./EKG_DATA/)
 
 ## Deepcraft Model:
 
-El programa nos provee una buena herramienta para desarrollar modelos de forma agil para nuestros datos.
+The program provides us with a good tool for quickly developing models for our data.
 
 <img src="./Images/6.png">
 
-En nuestro caso te compartimos los resultados de el entrenamiento de nuestro modelo con el fin de que puedas realizar tus propias pruebas y encontrar uno mejor.
+In our case, we're sharing the results of our model training so you can run your own tests and find a better one.
 
 <img src="./Images/7.png">
 
-El modelo que utilizamos en nuestro proyecto fue el siguiente, puedes descargarlo y probarlo directamente en Deepcraft studio.
+The model we used in our project was the following; you can download and test it directly in Deepcraft Studio.
 
 [MODEL](./EKG_MODEL/Models/conv1d-large-accuracy-2/conv1d-large-accuracy-2.h5)
 
 ## Deepcraft Deployment:
 
-Ahora ya con un modelo funcional, debemos de desplegarlo en nuestro PSoC 6 AI, lo unico que tendremos que hacer es ir a la pestaña de CodeGen y generar el codigo del modelo en C.
+Now that we have a working model, we must deploy it in our PSoC 6 AI. All we have to do is go to the CodeGen tab and generate the model code in C.
 
 <img src="./Images/gen.png">
 
-Una vez generado el modelo obtendras dos archivos, model.c y model.h. Estos dos archivos deberas colocarlos en tu codigo de Modus para empezar a realizar inferencias.
+Once the model is generated, you will get two files, model.c and model.h. You must place these two files in your Modus code to start making inferences.
 
 <img src="./Images/8.png">
 
-NOTA: No hay un ejemplo basico de como realizar inferencias de sensores leidos mediante ADC, sin embargo realice mi propio codigo basandome en los ejemplos provistos por Infineon.
+NOTE: There is no basic example of how to make inferences from sensors read using ADCs. However, I created my own code based on the examples provided by Infineon.
 
 [ADC MODEL INFERENCE](./EKG_MODEL_MODUS/)
 
