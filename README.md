@@ -1,6 +1,6 @@
 # AI Detection of Cardiac Abnormalities
 
-Deteccion de Anormalidades cardiacas mediante DeepCraft Studio e Infineon.
+Detection of Cardiac Abnormalities using DeepCraft Studio and Infineon.
 
 <img src="./Images/logo.png">
 
