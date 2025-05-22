@@ -90,11 +90,11 @@ Materials:
 
 ## Read the ADC:
 
-Antes de empezar todo el trabajo de recolectar datos para realizar un modelo de AI, lo primero que realizamos fue el codigo necesario para realizar una lectura ADC en nuestra board, por suerte para nosotros uno de los pines TX de la board nos permite a su vez leer el ADC, P10_0 en este caso.
+Before starting all the work of collecting data to create an AI model, the first thing we did was write the code needed to read the ADC on our board. Luckily for us, one of the board's TX pins also allows us to read the ADC, P10_0 in this case.
 
 <img src="./Images/2.png" height = "360">
 
-- Este codigo es el ADC basico que provee Infineon en los ejemplos, sin embargo hay algunas funciones importantes que ocuparemos para obtener estos valores en el Studio.
+- This code is the basic ADC that Infineon provides in the examples; however, there are some important functions we'll use to obtain these values ​​in Studio.
 
     ```c
     void adc_single_channel_init(void); // Start the ADC on the board
@@ -107,55 +107,54 @@ Here is the functional example to perform an ADC reading on the board.
 
 ## Deepcraft Streaming:
 
-El proceso de lectura de datos de ADC hacia el Studio fue laborioso ya que aun la documentacion para crear nuevos sensores en la board y obtenerlos en el studio no son del todo claros, sin embargo se realizo el hackeo de el proyecto de muestra de Deecraft Streaming para poder leer los datos desde nuestro EKG hacia el Studio.
+The process of reading ADC data into Studio was laborious since the documentation for creating new sensors on the board and accessing them in the Studio is not entirely clear. However, a hack was performed on the Deecraft Streaming sample project to be able to read data from our EKG into Studio.
 
-NOTA: Este es un hackeo que ocupa ser refinado para futuras versiones de la documentacion, sin embargo es funcional completamente.
+NOTE: This is a hack that needs to be refined for future versions of the documentation; however, it is fully functional.
 
-- Primero en el archivo dev_bmm350.c en el proyecto EKG_STREAMING, se agregaron las dependencias, funciones y definiciones necesarias para el funcionamiento del ADC. En lo particular debes de agregar las dos funciones que mencionamos con anteioridad.
+- First, in the dev_bmm350.c file in the EKG_STREAMING project, the dependencies, functions, and definitions necessary for the ADC to work were added. Specifically, you must add the two functions mentioned above.
 
     ```c
     void adc_single_channel_init(void); // Start the ADC on the board
     void adc_single_channel_process(void); // Read the ADC values
     ```
 
-- En la funcion de _init_hw debes de inicializar el ADC como se muestra en el siguiente snippet.
+- In the _init_hw function, you must initialize the ADC as shown in the following snippet.
 
-    ```c
-    static bool _init_hw(dev_bmm350_t *dev, cyhal_i2c_t* i2c)
-    {
-	adc_single_channel_init();
-	cyhal_adc_configure(&adc_obj, &adc_config);
-    ...
-    ```
-- Realizar la modificacion de la funcion _read_hw para que todos los datos que sean leidos desde el ADC sean pasados al Deepcraft Studio.
+```c
+static bool _init_hw(dev_bmm350_t *dev, cyhal_i2c_t* i2c)
+{
+adc_single_channel_init();
+cyhal_adc_configure(&adc_obj, &adc_config);
+...
+```
+- Modify the _read_hw function so that all data read from the ADC is passed to Deepcraft Studio.
 
-    ```c
-    static bool _read_hw(dev_bmm350_t* dev)
-    {
-    ...
-    int32_t adc_result_0 = 0;
-    adc_result_0 = cyhal_adc_read_uv(&adc_chan_0_obj) / MICRO_TO_MILLI_CONV_RATIO;
-    float res = (float)adc_result_0;
-    data.y = res;
+```c
+static bool _read_hw(dev_bmm350_t* dev)
+{
+...
+int32_t adc_result_0 = 0;
+adc_result_0 = cyhal_adc_read_uv(&adc_chan_0_obj) / MICRO_TO_MILLI_CONV_RATIO;
+float res = (float)adc_result_0;
+data.y = res;
 
-    float *dest = dev->data + dev->frames_sampled * AXIS_COUNT;
-    *dest++ = res;
-    ...
-    ```
-- La ultima modificacion importante es cambiar los nombres y etiquetas que recibe el studio para tener coherencia con el sensor.
+float *dest = dev->data + dev->frames_sampled * AXIS_COUNT;
+*dest++ = res;
+...
+```
+- The last major change is to change the names and labels the studio receives to be consistent with the sensor.
 
-    ```c
-    int device = protocol_add_device(
-        protocol,
-        protocol_DeviceType_DEVICE_TYPE_SENSOR,
-        "ECG",
-        "ECG (AD8232)",
-        manager);
-    ...
-    ```
+```c
+int device = protocol_add_device(
+protocol,
+protocol_DeviceType_DEVICE_TYPE_SENSOR,
+"ECG",
+"ECG (AD8232)",
+manager);
+...
+```
 
-Finalmente realizaremos el build y en nuestro studio podremos visualizar los datos del sensor de EKG, asi como cambiar su frecuencia de muestreo, etc.
-
+Finally, we'll complete the build, and in our studio, we'll be able to view the EKG sensor data, as well as change its sampling rate, etc.
 <img src="./Images/3.png">
 
 Los datos que deberemos ver en el estudio deberan ser los siguientes. Recomendamos tomar ventaja del studio y colocar un Low Pass filter, ya que al ser una señal muy pequeña la del EKG puede visualizarse la señarl de 50-60hz de la linea electrica.
